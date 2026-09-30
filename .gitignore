@@ -15,3 +15,13 @@ export_credentials.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+# Rootbound / Godot additions
+.godot/
+export/
+build/
+*.apk
+*.aab
+*.keystore
+release.keystore
+*.tmp
