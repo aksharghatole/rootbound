@@ -1,0 +1,28 @@
+{
+  "events": [
+    {
+      "id": "drought",
+      "name": "Drought",
+      "stat": "roots",
+      "base_damage": 5,
+      "base_weight": 10,
+      "weight_escalation": 1
+    },
+    {
+      "id": "pest",
+      "name": "Pest",
+      "stat": "leaves",
+      "base_damage": 4,
+      "base_weight": 8,
+      "weight_escalation": 1
+    },
+    {
+      "id": "frost",
+      "name": "Frost",
+      "stat": "trunk",
+      "base_damage": 5,
+      "base_weight": 6,
+      "weight_escalation": 2
+    }
+  ]
+}
