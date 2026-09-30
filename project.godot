@@ -7,7 +7,7 @@ config_version=5
 
 config/name="Rootbound"
 config/description="A turn-based survival game about being a tree."
-config/version="0.1.0-m1"
+config/version="0.4.0-m4"
 run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
