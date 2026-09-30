@@ -1,6 +1,6 @@
 extends Control
-## MainMenu — Milestone 5
-## Continue loads a save. New Run silently overwrites (issue #5 decision a).
+## MainMenu — Milestone 6
+## New Run -> SeedSelect. Continue resumes save.
 
 @onready var new_run_button: Button = $ButtonBox/NewRunButton
 @onready var continue_button: Button = $ButtonBox/ContinueButton
@@ -26,17 +26,16 @@ func _ready() -> void:
 
 
 func _on_new_run_pressed() -> void:
-	print("Starting new run")
-	GameManager.start_new_run()
-	get_tree().change_scene_to_file("res://scenes/GameScreen.tscn")
+	print("New Run — going to seed select")
+	get_tree().change_scene_to_file("res://scenes/SeedSelect.tscn")
 
 
 func _on_continue_pressed() -> void:
 	print("Continue pressed")
 	var s: GameState = GameManager.resume_run()
 	if s == null:
-		print("Continue: no valid save. Starting fresh instead.")
-		GameManager.start_new_run()
+		print("Continue: no valid save. Starting fresh with oak.")
+		GameManager.start_new_run("oak")
 	get_tree().change_scene_to_file("res://scenes/GameScreen.tscn")
 
 

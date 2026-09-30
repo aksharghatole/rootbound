@@ -36,7 +36,7 @@ func _ready() -> void:
 	# so the screen is never in a broken state. In real play, MainMenu already
 	# started or resumed a run.
 	if GameManager.get_state() == null:
-		GameManager.start_new_run()
+		GameManager.start_new_run("oak")
 
 	# Subscribe to GameManager signals.
 	GameManager.state_changed.connect(_on_state_changed)
@@ -98,7 +98,7 @@ func _on_event_fired(event_name: String, damage: int) -> void:
 
 
 func _on_run_ended(won: bool) -> void:
-	var meta: Meta = GameManager.get_meta()
+	var meta: Meta = GameManager.get_meta_data()
 	var final_season: int = 0
 	# current_state is null by the time run_ended fires; read from meta for best.
 	if meta != null:
