@@ -1,7 +1,6 @@
 extends Node
-## GameManager — Milestone 4
-## Owns the current GameState and meta. Persists to disk on state changes.
-## UI listens to these signals. UI never mutates GameState directly.
+## GameManager — Milestone 6
+## Owns current GameState and meta. Persists to disk on state changes.
 
 signal run_started(state: GameState)
 signal run_ended(won: bool)
@@ -10,21 +9,24 @@ signal growth_spent(stat: String, new_value: int)
 signal season_advanced(new_season: int)
 signal event_fired(event_name: String, damage: int)
 signal meta_changed(meta: Meta)
+signal seed_unlocked(seed_id: String)
 
 var current_state: GameState = null
 var meta: Meta = null
 var _rng: RNG = null
 var _events: EventSystem = null
+var _seeds: SeedLibrary = null
 
 
 func _ready() -> void:
 	_rng = RNG.new(0)
 	_events = EventSystem.new()
+	_seeds = SeedLibrary.new()
 	meta = SaveManager.load_meta()
 	if meta == null:
 		meta = Meta.new()
-	print("GameManager ready. Events loaded: %d. Meta: %s" % [
-		_events.event_count(), str(meta)
+	print("GameManager ready. Events: %d. Seeds: %d. Meta: %s" % [
+		_events.event_count(), _seeds.count(), str(meta)
 	])
 
 
@@ -32,12 +34,34 @@ func has_active_run() -> bool:
 	return current_state != null and current_state.is_alive()
 
 
-func start_new_run() -> GameState:
+func get_seed_library() -> SeedLibrary:
+	return _seeds
+
+
+func start_new_run(seed_name: String = "oak") -> GameState:
+	var seed_obj: Seed = _seeds.get_seed(seed_name)
+	if seed_obj == null:
+		# Fall back to default if name unknown.
+		seed_obj = _seeds.default_seed()
+		if seed_obj == null:
+			push_error("GameManager.start_new_run: no seeds available")
+			return null
+
 	current_state = GameState.new()
-	current_state.rng_seed = randi()
+	current_state.seed_name = seed_obj.id
+	current_state.roots = seed_obj.starting_roots
+	current_state.trunk = seed_obj.starting_trunk
+	current_state.leaves = seed_obj.starting_leaves
+	current_state.hp = seed_obj.starting_hp
+	current_state.max_hp = seed_obj.starting_hp
 	current_state.growth_points = 0
+	current_state.passive_used = false
+	current_state.rng_seed = randi()
+
 	_rng = RNG.new(current_state.rng_seed)
-	print("Starting new run. Seed: %d" % current_state.rng_seed)
+	print("Starting new run. Seed: %s (%d). RNG: %d" % [
+		seed_obj.id, seed_obj.starting_hp, current_state.rng_seed
+	])
 	SaveManager.save_run(current_state)
 	run_started.emit(current_state)
 	state_changed.emit(current_state)
@@ -45,13 +69,14 @@ func start_new_run() -> GameState:
 
 
 func resume_run() -> GameState:
-	## Load a saved run into current_state. Returns null if no save.
 	var loaded: GameState = SaveManager.load_run()
 	if loaded == null:
 		return null
 	current_state = loaded
 	_rng = RNG.new(current_state.rng_seed)
-	print("Resumed run. Season: %d, HP: %d" % [current_state.season, current_state.hp])
+	print("Resumed run. Seed: %s. Season: %d, HP: %d" % [
+		current_state.seed_name, current_state.season, current_state.hp
+	])
 	run_started.emit(current_state)
 	state_changed.emit(current_state)
 	return current_state
@@ -62,10 +87,20 @@ func end_run(won: bool) -> void:
 		return
 	print("Run ended. Won: %s" % str(won))
 
-	# Meta update
 	if meta == null:
 		meta = Meta.new()
+
+	# Record the run
 	meta.record_run(current_state.season, won)
+
+	# Unlock chain
+	if won:
+		var seed_obj: Seed = _seeds.get_seed(current_state.seed_name)
+		if seed_obj != null and seed_obj.unlocks_on_win != "":
+			if meta.unlock_seed(seed_obj.unlocks_on_win):
+				print("Unlocked seed: %s" % seed_obj.unlocks_on_win)
+				seed_unlocked.emit(seed_obj.unlocks_on_win)
+
 	SaveManager.save_meta(meta)
 	meta_changed.emit(meta)
 

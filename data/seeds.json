@@ -1,0 +1,34 @@
+{
+  "seeds": [
+    {
+      "id": "oak",
+      "display_name": "Oak",
+      "starting_roots": 1,
+      "starting_trunk": 1,
+      "starting_leaves": 1,
+      "starting_hp": 10,
+      "passive_description": "Balanced. No passive.",
+      "unlocks_on_win": "willow"
+    },
+    {
+      "id": "willow",
+      "display_name": "Willow",
+      "starting_roots": 0,
+      "starting_trunk": 1,
+      "starting_leaves": 3,
+      "starting_hp": 8,
+      "passive_description": "+1 growth point each season.",
+      "unlocks_on_win": "birch"
+    },
+    {
+      "id": "birch",
+      "display_name": "Birch",
+      "starting_roots": 3,
+      "starting_trunk": 2,
+      "starting_leaves": 0,
+      "starting_hp": 12,
+      "passive_description": "Immune to the first event each run.",
+      "unlocks_on_win": ""
+    }
+  ]
+}

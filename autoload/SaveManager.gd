@@ -67,6 +67,7 @@ func deserialize(data: Dictionary) -> GameState:
 	s.growth_points = int(d["growth_points"])
 	s.rng_seed = int(d["rng_seed"])
 	s.seed_name = String(d["seed_name"])
+	s.passive_used = bool(d.get("passive_used", false))
 	return s
 
 
