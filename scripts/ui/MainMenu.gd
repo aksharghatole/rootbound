@@ -1,6 +1,6 @@
 extends Control
-## MainMenu — Milestone 6
-## New Run -> SeedSelect. Continue resumes save.
+## MainMenu — Milestone 7
+## New Run -> SeedSelect. Continue resumes save. All buttons play 'tap'.
 
 @onready var new_run_button: Button = $ButtonBox/NewRunButton
 @onready var continue_button: Button = $ButtonBox/ContinueButton
@@ -26,11 +26,13 @@ func _ready() -> void:
 
 
 func _on_new_run_pressed() -> void:
+	AudioManager.play_sfx("tap")
 	print("New Run — going to seed select")
 	get_tree().change_scene_to_file("res://scenes/SeedSelect.tscn")
 
 
 func _on_continue_pressed() -> void:
+	AudioManager.play_sfx("tap")
 	print("Continue pressed")
 	var s: GameState = GameManager.resume_run()
 	if s == null:
@@ -40,5 +42,6 @@ func _on_continue_pressed() -> void:
 
 
 func _on_quit_pressed() -> void:
+	AudioManager.play_sfx("tap")
 	print("Quit pressed")
 	get_tree().quit()

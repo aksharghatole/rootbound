@@ -1,6 +1,6 @@
 extends Control
-## GameScreen — Milestone 5
-## Wires UI components to GameManager signals. Never mutates state directly.
+## GameScreen — Milestone 7
+## Wires UI to GameManager signals. Plays tap/event SFX. Starts ambient music.
 
 @onready var season_label: Label = $TopBar/SeasonLabel
 @onready var hp_label: Label = $TopBar/HpLabel
@@ -32,18 +32,21 @@ func _ready() -> void:
 	advance_button.pressed.connect(_on_advance_pressed)
 	menu_button.pressed.connect(_on_menu_pressed)
 
-	# If no run is active (e.g. someone opened GameScreen directly), start one
-	# so the screen is never in a broken state. In real play, MainMenu already
-	# started or resumed a run.
 	if GameManager.get_state() == null:
 		GameManager.start_new_run("oak")
 
-	# Subscribe to GameManager signals.
 	GameManager.state_changed.connect(_on_state_changed)
 	GameManager.event_fired.connect(_on_event_fired)
 	GameManager.run_ended.connect(_on_run_ended)
 
+	AudioManager.play_music("ambient")
+
 	_refresh()
+
+
+func _exit_tree() -> void:
+	# Stop ambient when we leave this screen.
+	AudioManager.stop_music()
 
 
 func _refresh() -> void:
@@ -65,26 +68,27 @@ func _refresh() -> void:
 	trunk_row.set_plus_enabled(can_spend)
 	leaves_row.set_plus_enabled(can_spend)
 
-	# Can only advance when all points have been spent.
 	advance_button.disabled = s.growth_points > 0
 
 	tree_visual.set_stats(s.roots, s.trunk, s.leaves, s.hp, s.max_hp)
 
 
 func _on_spend(stat_name: String) -> void:
+	AudioManager.play_sfx("tap")
 	GameManager.spend_growth_point(stat_name)
 
 
 func _on_minus(_stat_name: String) -> void:
-	# No-op for MVP. Refund feature is future work.
 	pass
 
 
 func _on_advance_pressed() -> void:
+	AudioManager.play_sfx("tap")
 	GameManager.advance_season()
 
 
 func _on_menu_pressed() -> void:
+	AudioManager.play_sfx("tap")
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 
 
@@ -93,19 +97,18 @@ func _on_state_changed(_state: GameState) -> void:
 
 
 func _on_event_fired(event_name: String, damage: int) -> void:
+	AudioManager.play_sfx("event")
 	if event_log != null:
 		event_log.add_line("%s (−%d HP)" % [event_name, damage])
 
 
 func _on_run_ended(won: bool) -> void:
-	var meta: Meta = GameManager.get_meta_data()
-	var final_season: int = 0
-	# current_state is null by the time run_ended fires; read from meta for best.
-	if meta != null:
-		final_season = meta.best_season
+	if won:
+		AudioManager.play_sfx("win")
+	else:
+		AudioManager.play_sfx("death")
 	get_tree().change_scene_to_file("res://scenes/GameOver.tscn")
 
 
-## Test helper
 func press_advance_for_test() -> void:
 	_on_advance_pressed()

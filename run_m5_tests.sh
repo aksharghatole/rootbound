@@ -29,9 +29,10 @@ run_test "M4 REGRESSION: save atomic"  tests/test_save_atomic.gd
 run_test "M4 REGRESSION: meta"         tests/test_meta_persistence.gd
 run_test "M5 REGRESSION: stat row"     tests/test_stat_row.gd
 run_test "M5 REGRESSION: game sigs"    tests/test_game_screen_signals.gd
-run_test "M6 NEW: seed library"        tests/test_seed_library.gd
-run_test "M6 NEW: seed stats"          tests/test_seed_starting_stats.gd
-run_test "M6 NEW: unlock flow"         tests/test_unlock_flow.gd
+run_test "M6 REGRESSION: seed library" tests/test_seed_library.gd
+run_test "M6 REGRESSION: seed stats"   tests/test_seed_starting_stats.gd
+run_test "M6 REGRESSION: unlock flow"  tests/test_unlock_flow.gd
+run_test "M7 NEW: audio manager"       tests/test_audio_manager.gd
 
 echo "=== DONE ==="
 if [ "$FAILED" -ne 0 ]; then

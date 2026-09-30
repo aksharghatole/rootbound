@@ -1,6 +1,6 @@
 extends Control
-## GameOver — Milestone 6
-## Shows result. Retry restarts with the last-used seed (fallback: oak).
+## GameOver — Milestone 7
+## Result display. Buttons play 'tap'. Win/death SFX fired by GameScreen.
 
 @onready var result_label: Label = $VBox/ResultLabel
 @onready var detail_label: Label = $VBox/DetailLabel
@@ -12,9 +12,6 @@ var last_seed_name: String = "oak"
 
 func _ready() -> void:
 	print("GameOver loaded.")
-
-	# SeedSelect passes the last seed via a static-ish mechanism: we read it
-	# from the meta history OR default. For MVP, use oak. Retry resets.
 	retry_button.pressed.connect(_on_retry)
 	menu_button.pressed.connect(_on_menu)
 	_refresh()
@@ -42,9 +39,11 @@ func _refresh() -> void:
 
 
 func _on_retry() -> void:
+	AudioManager.play_sfx("tap")
 	GameManager.start_new_run(last_seed_name)
 	get_tree().change_scene_to_file("res://scenes/GameScreen.tscn")
 
 
 func _on_menu() -> void:
+	AudioManager.play_sfx("tap")
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")

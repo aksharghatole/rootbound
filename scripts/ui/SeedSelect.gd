@@ -1,8 +1,6 @@
 extends Control
-## SeedSelect — Milestone 6
-## Lists seeds. Unlocked seeds startable; locked seeds show a lock.
-## Builds buttons dynamically from SeedLibrary — no scene authoring needed
-## for each seed.
+## SeedSelect — Milestone 7
+## Lists seeds. Unlocked seeds startable. Buttons play 'tap'.
 
 @onready var title_label: Label = $VBox/TitleLabel
 @onready var seed_list: VBoxContainer = $VBox/SeedList
@@ -53,10 +51,12 @@ func _build_list() -> void:
 
 
 func _on_seed_chosen(seed_id: String) -> void:
+	AudioManager.play_sfx("tap")
 	print("Seed chosen: %s" % seed_id)
 	GameManager.start_new_run(seed_id)
 	get_tree().change_scene_to_file("res://scenes/GameScreen.tscn")
 
 
 func _on_back() -> void:
+	AudioManager.play_sfx("tap")
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
