@@ -52,10 +52,10 @@ echo "Accepting licenses..."
 yes | sdkmanager --licenses >/dev/null 2>&1 || true
 
 echo "Installing SDK components (platform-tools, platforms, build-tools)..."
-sdkmanager --install \
+yes | sdkmanager --install \
   "platform-tools" \
   "platforms;${SDK_PLATFORM}" \
-  "build-tools;${BUILD_TOOLS}" >/dev/null
+  "build-tools;${BUILD_TOOLS}"
 
 # --- Optional: NDK. Uncomment if Godot export complains. ---
 # echo "Installing NDK..."
