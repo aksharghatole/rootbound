@@ -1,27 +1,33 @@
-# Godot 4+ specific ignores
+# Godot 4+
 .godot/
 .nomedia
-
-# Godot-specific ignores
 .import/
 export.cfg
 export_credentials.cfg
-*.tmp
-
-# Imported translations (automatically generated from CSV files)
 *.translation
 
-# Mono-specific ignores
+# Mono (not used, but harmless to keep)
 .mono/
 data_*/
 mono_crash.*.json
 
-# Rootbound / Godot additions
-.godot/
+# Rootbound build outputs
 export/
 build/
 *.apk
 *.aab
 *.keystore
 release.keystore
+
+# Local dev tools (Godot binary downloaded into workspace)
+.tools/
+
+# Temp files
 *.tmp
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+.idea/
