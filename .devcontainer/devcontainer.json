@@ -6,7 +6,6 @@
       "version": "17"
     }
   },
-  "postCreateCommand": "bash .devcontainer/setup.sh",
   "customizations": {
     "vscode": {
       "extensions": [
