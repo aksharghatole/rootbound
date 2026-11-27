@@ -1,4 +1,6 @@
 extends Control
+
+const SafeArea = preload("res://scripts/util/SafeArea.gd")
 ## MainMenu — Milestone 7
 ## New Run -> SeedSelect. Continue resumes save. All buttons play 'tap'.
 
@@ -9,6 +11,7 @@ extends Control
 
 
 func _ready() -> void:
+	SafeArea.attach(self, [$TitleLabel, $ButtonBox, $StatusLabel, $VersionLabel])
 	print("Rootbound booted.")
 	print("MainMenu scene loaded.")
 

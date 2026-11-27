@@ -1,4 +1,6 @@
 extends Control
+
+const SafeArea = preload("res://scripts/util/SafeArea.gd")
 ## SeedSelect — Milestone 7
 ## Lists seeds. Unlocked seeds startable. Buttons play 'tap'.
 
@@ -8,6 +10,7 @@ extends Control
 
 
 func _ready() -> void:
+	SafeArea.attach(self, [$VBox])
 	print("SeedSelect loaded.")
 	back_button.pressed.connect(_on_back)
 	_build_list()
