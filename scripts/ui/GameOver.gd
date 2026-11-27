@@ -1,5 +1,6 @@
 extends Control
 
+const WoodlandStyle = preload("res://scripts/ui/WoodlandStyle.gd")
 const SafeArea = preload("res://scripts/util/SafeArea.gd")
 ## GameOver — Milestone 7
 ## Result display. Buttons play 'tap'. Win/death SFX fired by GameScreen.
@@ -14,6 +15,8 @@ var last_seed_name: String = "oak"
 
 func _ready() -> void:
 	SafeArea.attach(self, [$VBox])
+	WoodlandStyle.apply(retry_button, true)
+	WoodlandStyle.apply(menu_button, false)
 	print("GameOver loaded.")
 	retry_button.pressed.connect(_on_retry)
 	menu_button.pressed.connect(_on_menu)
@@ -38,6 +41,12 @@ func _refresh() -> void:
 		retry_button.disabled = true
 	else:
 		last_seed_name = str(result["seed_id"])
+		var won: bool = bool(result["won"])
+		$VBox/Emblem.texture = load("res://assets/art/seed_%s.svg" % last_seed_name) as Texture2D
+		$VBox/Emblem.modulate = Color.WHITE if won else Color("#9a9690")
+		$VBox/ChapterLabel.text = "THE FOREST REMEMBERS" if won else "THE EARTH RECLAIMS"
+		$VBox/MessageLabel.text = "Your roots endure. A new chapter awaits." if won else "Every fallen tree nourishes the next beginning."
+		result_label.add_theme_color_override("font_color", Color("#e5d298") if won else Color("#d3b8a1"))
 		if bool(result["won"]):
 			result_label.text = "Survived 12 Seasons!"
 		else:
