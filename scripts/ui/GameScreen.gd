@@ -73,6 +73,7 @@ func _refresh() -> void:
 
 	advance_button.disabled = s.growth_points > 0
 
+	tree_visual.set_season(s.season)
 	tree_visual.set_stats(s.roots, s.trunk, s.leaves, s.hp, s.max_hp)
 
 
