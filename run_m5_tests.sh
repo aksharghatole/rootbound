@@ -24,7 +24,7 @@ for path in tests/test_season_system.gd tests/test_event_system.gd tests/test_fu
   tests/test_save_round_trip.gd tests/test_save_corrupt.gd tests/test_save_atomic.gd \
   tests/test_meta_persistence.gd tests/test_stat_row.gd tests/test_game_screen_signals.gd \
   tests/test_seed_library.gd tests/test_seed_starting_stats.gd tests/test_unlock_flow.gd \
-  tests/test_audio_manager.gd tests/test_safe_area.gd; do
+  tests/test_audio_manager.gd tests/test_safe_area.gd tests/test_run_result.gd; do
   run_test "$path"
 done
 exit "$FAILED"

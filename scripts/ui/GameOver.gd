@@ -28,13 +28,20 @@ func _refresh() -> void:
 	var meta: Meta = GameManager.get_meta_data()
 	if meta == null:
 		result_label.text = "Run ended"
+		retry_button.disabled = true
 		detail_label.text = ""
 		return
 
-	if meta.best_season >= 12:
-		result_label.text = "Survived 12 Seasons!"
+	var result: Dictionary = GameManager.get_last_run_result()
+	if result.is_empty():
+		result_label.text = "Run ended"
+		retry_button.disabled = true
 	else:
-		result_label.text = "Season %d — Tree Died" % meta.best_season
+		last_seed_name = str(result["seed_id"])
+		if bool(result["won"]):
+			result_label.text = "Survived 12 Seasons!"
+		else:
+			result_label.text = "Season %d — Tree Died" % int(result["season"])
 
 	detail_label.text = "Best: Season %d   •   Runs: %d" % [
 		meta.best_season, meta.total_runs
