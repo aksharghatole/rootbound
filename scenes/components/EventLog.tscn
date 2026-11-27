@@ -3,10 +3,10 @@
 [ext_resource type="Script" path="res://scripts/ui/EventLog.gd" id="1_eventlog"]
 
 [node name="EventLog" type="VBoxContainer"]
-custom_minimum_size = Vector2(0, 140)
+custom_minimum_size = Vector2(0, 104)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 640.0
-offset_bottom = 140.0
+offset_bottom = 104.0
 theme_override_constants/separation = 4
 script = ExtResource("1_eventlog")
