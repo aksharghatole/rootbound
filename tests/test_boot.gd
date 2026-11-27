@@ -25,6 +25,13 @@ func _run_test() -> void:
 		instance.free()
 		quit(1)
 		return
+	var art: TextureRect = instance.get_node_or_null("Background")
+	var subtitle: Label = instance.get_node_or_null("Subtitle")
+	if art == null or art.texture == null or subtitle == null or not new_run.has_theme_stylebox_override("normal"):
+		push_error("FAILED: title art, subtitle or custom button styling missing")
+		instance.free()
+		quit(1)
+		return
 	instance.free()
-	print("PASS: MainMenu loaded, ready and connected.")
+	print("PASS: MainMenu loaded, ready, connected and styled.")
 	quit(0)
