@@ -4,6 +4,9 @@ extends HBoxContainer
 ## Emits signals for plus/minus. Does not talk to GameManager directly —
 ## GameScreen wires us up. This keeps the row unit-testable headless.
 
+const WoodlandStyle = preload("res://scripts/ui/WoodlandStyle.gd")
+const BENEFITS: Dictionary = {"roots": "Drought resistance", "trunk": "+2 maximum and current HP", "leaves": "More seasonal growth"}
+
 signal plus_pressed(stat_name: String)
 signal minus_pressed(stat_name: String)
 
@@ -16,6 +19,8 @@ var stat_name: String = "roots"
 
 
 func _ready() -> void:
+	minus_button.hide()
+	WoodlandStyle.apply(plus_button, true)
 	minus_button.pressed.connect(_on_minus)
 	plus_button.pressed.connect(_on_plus)
 	_refresh_labels()
@@ -24,7 +29,8 @@ func _ready() -> void:
 func configure(display_name: String, internal_name: String) -> void:
 	stat_name = internal_name
 	if name_label != null:
-		name_label.text = display_name
+		name_label.text = display_name + "\n" + str(BENEFITS.get(internal_name, ""))
+		name_label.tooltip_text = str(BENEFITS.get(internal_name, ""))
 
 
 func set_value(v: int) -> void:
@@ -35,6 +41,7 @@ func set_value(v: int) -> void:
 func set_plus_enabled(can_spend: bool) -> void:
 	if plus_button != null:
 		plus_button.disabled = not can_spend
+		plus_button.text = "Grow +" if can_spend else "+"
 
 
 func is_plus_enabled() -> bool:

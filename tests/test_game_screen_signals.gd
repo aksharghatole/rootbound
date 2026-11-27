@@ -48,6 +48,13 @@ func _run_tests() -> void:
 	if advance_button.disabled:
 		_fail("advance button should be enabled when growth_points == 0")
 
+	if not advance_button.text.contains("Summer"):
+		_fail("advance action should name next season")
+	if screen.get_node("Body/SeasonProgress").value != 1:
+		_fail("season progress should start at one")
+	if not points_label.text.contains("0"):
+		_fail("growth points should reflect current state")
+
 	# --- Spend a point programmatically via GameManager ---
 	# Give the state a point to spend.
 	var s: GameState = gm.get_state()
@@ -61,6 +68,11 @@ func _run_tests() -> void:
 	# Now disable advance because points > 0
 	if not advance_button.disabled:
 		_fail("advance button should be disabled when growth_points > 0")
+
+	if advance_button.text != "Allocate growth first":
+		_fail("disabled advance action should explain why")
+	if roots_row.get_node("MinusButton").visible:
+		_fail("unimplemented minus control should be hidden")
 
 	# --- Spend on roots and verify ---
 	var before_roots: int = s.roots
@@ -85,6 +97,8 @@ func _run_tests() -> void:
 		_fail("tree should reflect season and health")
 	if not tree.is_processing():
 		_fail("growth and damage should trigger a short animation")
+	if screen.get_node("Body/SeasonProgress").value != 4 or not season_label.text.contains("Winter"):
+		_fail("HUD should reflect season change")
 	if tree._weather <= 0.0:
 		_fail("season change should trigger weather feedback")
 	tree._process(1.0)
@@ -107,6 +121,9 @@ func _run_tests() -> void:
 	elif not str(lines[0]).begins_with("Drought"):
 		_fail("event log line wrong: '%s'" % str(lines[0]))
 
+	gm.event_fired.emit("Protected", 0)
+	if not str(event_log.get_lines().back()).contains("No damage"):
+		_fail("zero-damage events should report protection clearly")
 	screen.free()
 	_finish()
 

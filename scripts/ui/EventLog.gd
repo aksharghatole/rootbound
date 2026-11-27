@@ -34,6 +34,7 @@ func _refresh() -> void:
 	for line in _lines:
 		var lbl: Label = Label.new()
 		lbl.text = str(line)
-		lbl.add_theme_font_size_override("font_size", 20)
+		lbl.add_theme_font_size_override("font_size", 19)
+		lbl.add_theme_color_override("font_color", Color("#e0a690") if str(line).contains("−") else Color("#b8c7a9"))
 		lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		add_child(lbl)
