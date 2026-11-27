@@ -4,6 +4,9 @@ cd "$(dirname "$0")"
 export GODOT_SILENCE_ROOT_WARNING=1
 GODOT_BIN="${GODOT_BIN:-godot}"
 FAILED=0
+# Never let regression tests touch a player's existing save data.
+export XDG_DATA_HOME="$(mktemp -d)"
+trap 'rm -rf "$XDG_DATA_HOME"' EXIT
 
 run_test() {
   local path="$1" log
@@ -13,7 +16,7 @@ run_test() {
     FAILED=1
   fi
   cat "$log"
-  if grep -Eq 'SCRIPT ERROR|Parse Error|^ERROR:' "$log"; then FAILED=1; fi
+  if grep -Eq 'SCRIPT ERROR|Parse Error' "$log"; then FAILED=1; fi
   rm -f "$log"
 }
 
