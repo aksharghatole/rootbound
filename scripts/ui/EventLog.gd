@@ -29,6 +29,7 @@ func get_lines() -> Array:
 
 func _refresh() -> void:
 	for child in get_children():
+		remove_child(child)
 		child.queue_free()
 	for line in _lines:
 		var lbl: Label = Label.new()

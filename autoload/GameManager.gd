@@ -12,6 +12,7 @@ signal meta_changed(meta: Meta)
 signal seed_unlocked(seed_id: String)
 
 var current_state: GameState = null
+var last_run_result: Dictionary = {}
 var meta: Meta = null
 var _rng: RNG = null
 var _events: EventSystem = null
@@ -90,6 +91,9 @@ func end_run(won: bool) -> void:
 	if meta == null:
 		meta = Meta.new()
 
+	# Capture the actual run before clearing state or notifying the UI.
+	last_run_result = {"won": won, "season": current_state.season, "seed_id": current_state.seed_name}
+
 	# Record the run
 	meta.record_run(current_state.season, won)
 
@@ -113,6 +117,10 @@ func end_run(won: bool) -> void:
 
 func get_state() -> GameState:
 	return current_state
+
+
+func get_last_run_result() -> Dictionary:
+	return last_run_result.duplicate()
 
 
 func get_meta_data() -> Meta:
