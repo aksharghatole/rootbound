@@ -12,6 +12,7 @@ const SafeArea = preload("res://scripts/util/SafeArea.gd")
 
 func _ready() -> void:
 	SafeArea.attach(self, [$TitleLabel, $ButtonBox, $StatusLabel, $VersionLabel])
+	$VersionLabel.text = "v%s" % ProjectSettings.get_setting("application/config/version")
 	print("Rootbound booted.")
 	print("MainMenu scene loaded.")
 
