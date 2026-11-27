@@ -40,7 +40,8 @@ static func shifted_offsets(original: Vector4, anchors: Vector4, insets: Vector4
 
 static func attach(screen: Control, controls: Array) -> void:
 	var originals: Array[Vector4] = []
-	for control: Control in controls:
+	for item in controls:
+		var control: Control = item
 		originals.append(Vector4(control.offset_left, control.offset_top, control.offset_right, control.offset_bottom))
 	var refresh := func() -> void:
 		var insets: Vector4 = margins(screen)
