@@ -1,4 +1,6 @@
 extends Control
+
+const SafeArea = preload("res://scripts/util/SafeArea.gd")
 ## GameOver — Milestone 7
 ## Result display. Buttons play 'tap'. Win/death SFX fired by GameScreen.
 
@@ -11,6 +13,7 @@ var last_seed_name: String = "oak"
 
 
 func _ready() -> void:
+	SafeArea.attach(self, [$VBox])
 	print("GameOver loaded.")
 	retry_button.pressed.connect(_on_retry)
 	menu_button.pressed.connect(_on_menu)

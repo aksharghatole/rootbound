@@ -1,4 +1,6 @@
 extends Control
+
+const SafeArea = preload("res://scripts/util/SafeArea.gd")
 ## GameScreen — Milestone 7
 ## Wires UI to GameManager signals. Plays tap/event SFX. Starts ambient music.
 
@@ -16,6 +18,7 @@ extends Control
 
 
 func _ready() -> void:
+	SafeArea.attach(self, [$TopBar, $Body])
 	print("GameScreen loaded.")
 
 	roots_row.configure("Roots", "roots")

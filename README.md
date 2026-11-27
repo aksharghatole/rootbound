@@ -1,20 +1,37 @@
 # Rootbound
 
-A turn-based survival game about being a tree.
+A turn-based survival game about being a tree. Choose deeper roots, a taller trunk or more leaves each season, survive hazards, and reach Season 12 to unlock the next seed.
 
-You are the spirit of a single tree. Each season you choose how to grow —
-deeper roots, a taller trunk, more leaves — then survive whatever the season
-throws at you. Reach Season 12 to unlock the next seed.
+## Play
 
-## Platform
-Android (portrait). Built with **Godot 4.3** and **GDScript**.
+Android (portrait), built with Godot 4.3 and GDScript.
 
-## Play (dev)
-- Open the project in the Godot editor, or
-- From Codespaces: `godot --headless --script tests/test_boot.gd`
+- [Download the M8 debug APK](https://github.com/aksharghatole/rootbound/releases/tag/m8-debug-1).
+- For development, open `project.godot` in Godot 4.3.
+
+## Development
+
+Run the headless import and regression suite on Linux or Codespaces:
+
+```sh
+bash scripts/check.sh
+```
+
+Set `GODOT_BIN` if the executable is not named `godot`.
+
+To build a debug APK in Codespaces:
+
+```sh
+bash scripts/setup_android_sdk.sh
+bash scripts/build_android.sh
+```
+
+Output: `build/rootbound.apk`.
 
 ## Status
-Milestone 1 — project boots.
+
+M8 Android debug build is released. [M9](https://github.com/aksharghatole/rootbound/issues/9) covers safe-area handling, audio verification and UX polish. Physical Android verification is required before declaring M9 complete.
 
 ## License
+
 MIT — see `LICENSE`.
