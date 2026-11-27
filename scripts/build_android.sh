@@ -4,7 +4,7 @@
 # Run: bash scripts/build_android.sh
 # Output: build/rootbound.apk
 
-set -e
+set -euo pipefail
 
 cd "$(dirname "$0")/.."   # repo root
 
@@ -22,8 +22,10 @@ if [ -z "${ANDROID_HOME:-}" ]; then
 fi
 
 # Locate godot binary (workspace-local first, then system)
-GODOT_BIN=""
-if [ -x ".tools/godot" ]; then
+GODOT_BIN="${GODOT_BIN:-}"
+if [ -n "$GODOT_BIN" ]; then
+  command -v "$GODOT_BIN" >/dev/null
+elif [ -x ".tools/godot" ]; then
   GODOT_BIN=".tools/godot"
 elif command -v godot >/dev/null 2>&1; then
   GODOT_BIN="$(command -v godot)"
@@ -40,14 +42,24 @@ echo ""
 mkdir -p build
 
 echo "Importing project (headless)..."
-"$GODOT_BIN" --headless --import >/dev/null 2>&1 || true
+IMPORT_LOG="$(mktemp)"
+trap 'rm -f "$IMPORT_LOG"' EXIT
+if ! "$GODOT_BIN" --headless --import >"$IMPORT_LOG" 2>&1; then
+  cat "$IMPORT_LOG"
+  exit 1
+fi
+if grep -Eq 'SCRIPT ERROR|Parse Error|^ERROR:' "$IMPORT_LOG"; then
+  cat "$IMPORT_LOG"
+  exit 1
+fi
+rm -f build/rootbound.apk
 
 echo "Exporting Android APK (debug)..."
 "$GODOT_BIN" --headless \
   --export-debug "Android" \
   "build/rootbound.apk"
 
-if [ ! -f build/rootbound.apk ]; then
+if [ ! -s build/rootbound.apk ]; then
   echo "ERROR: build/rootbound.apk was not created."
   exit 1
 fi

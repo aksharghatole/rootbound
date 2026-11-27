@@ -1,5 +1,5 @@
 ; Engine configuration file.
-; Rootbound — Milestone 1
+; Rootbound — Milestone 9
 
 config_version=5
 
@@ -7,7 +7,7 @@ config_version=5
 
 config/name="Rootbound"
 config/description="A turn-based survival game about being a tree."
-config/version="0.7.0-m7"
+config/version="0.9.0-m9"
 run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
