@@ -26,7 +26,7 @@ bash scripts/setup_android_sdk.sh
 bash scripts/build_android.sh
 ```
 
-Output: `build/rootbound.apk`.
+Output: `build/rootbound.apk`. The Android build workflow also produces a downloadable debug APK artifact after successful headless checks and signature verification. See [Actions](https://github.com/aksharghatole/rootbound/actions) and the [device checklist](docs/android_test_checklist.md). CI uses a temporary debug signing key; existing APKs signed with another key cannot be updated in place. Do not uninstall an existing installation without considering its local save data.
 
 ## Status
 
