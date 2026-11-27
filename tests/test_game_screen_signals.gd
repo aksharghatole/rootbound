@@ -77,16 +77,26 @@ func _run_tests() -> void:
 	var tree: Control = screen.get_node("Body/TreeVisual")
 	if tree.roots != after.roots:
 		_fail("tree should reflect updated root stat")
+	after.seed_name = "birch"
 	after.season = 4
 	after.hp -= 1
 	gm.state_changed.emit(after)
-	if tree.season != 4 or tree.hp != after.hp:
+	if tree.season != 4 or tree.hp != after.hp or tree.species != "birch":
 		_fail("tree should reflect season and health")
 	if not tree.is_processing():
 		_fail("growth and damage should trigger a short animation")
+	if tree._weather <= 0.0:
+		_fail("season change should trigger weather feedback")
 	tree._process(1.0)
 	if tree.is_processing():
 		_fail("animation should stop processing once settled")
+
+	tree.set_species("willow")
+	if tree.species != "willow":
+		_fail("willow species should be selectable")
+	tree.set_species("unknown")
+	if tree.species != "oak":
+		_fail("unknown species should fall back to oak")
 
 	# --- Event fired signal updates EventLog ---
 	gm.event_fired.emit("Drought", 3)

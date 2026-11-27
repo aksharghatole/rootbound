@@ -13,6 +13,10 @@ var leaves: int = 1
 var hp: int = 10
 var max_hp: int = 10
 var season: int = 1
+var species: String = "oak"
+var _weather: float = 0.0
+var _weather_elapsed: float = 0.0
+var _season_initialized: bool = false
 var _display: Vector3 = Vector3.ONE
 var _from: Vector3 = Vector3.ONE
 var _elapsed: float = 1.0
@@ -24,11 +28,22 @@ func _ready() -> void:
 	resized.connect(queue_redraw)
 	set_process(false)
 
+func set_species(value: String) -> void:
+	species = value if value in ["oak", "willow", "birch"] else "oak"
+	queue_redraw()
+
 func set_season(value: int) -> void:
-	season = clampi(value, 1, 12)
+	var next: int = clampi(value, 1, 12)
+	if _season_initialized and next != season:
+		_weather = 1.0
+		_weather_elapsed = 0.0
+		set_process(true)
+	season = next
+	_season_initialized = true
 	queue_redraw()
 
 func set_stats(r: int, t: int, l: int, h: int, mh: int) -> void:
+	var was_initialized: bool = _initialized
 	var next := Vector3(r, t, l)
 	if not _initialized:
 		_display = next
@@ -37,7 +52,7 @@ func set_stats(r: int, t: int, l: int, h: int, mh: int) -> void:
 		_from = _display
 		_elapsed = 0.0
 		set_process(true)
-	if h < hp:
+	if was_initialized and h < hp:
 		_damage = 1.0
 		set_process(true)
 	roots = r
@@ -50,10 +65,12 @@ func set_stats(r: int, t: int, l: int, h: int, mh: int) -> void:
 func _process(delta: float) -> void:
 	_elapsed = minf(1.0, _elapsed + delta / 0.38)
 	_damage = maxf(0.0, _damage - delta / 0.45)
+	_weather = maxf(0.0, _weather - delta / 0.85)
+	_weather_elapsed += delta
 	var ease_out: float = 1.0 - pow(1.0 - _elapsed, 3.0)
 	_display = _from.lerp(Vector3(roots, trunk, leaves), ease_out)
 	queue_redraw()
-	if _elapsed >= 1.0 and _damage <= 0.0:
+	if _elapsed >= 1.0 and _damage <= 0.0 and _weather <= 0.0:
 		set_process(false)
 
 func _draw() -> void:
@@ -100,9 +117,24 @@ func _draw() -> void:
 	var thickness: float = minf(w * 0.09, w * (0.022 + minf(_display.y, 20.0) * 0.003))
 	var top := origin - Vector2(0, h * (0.30 + minf(_display.y, 20.0) * 0.007))
 	var bark := Color("#76573d")
+	if species == "birch":
+		bark = Color("#d1c9ac")
+		thickness *= 0.65
+		top.y -= h * 0.055
+	elif species == "willow":
+		bark = Color("#867653")
+		top.y += h * 0.035
 	draw_colored_polygon(PackedVector2Array([origin + Vector2(-thickness, 0), origin + Vector2(thickness, 0), top + Vector2(thickness * 0.26, 0), top - Vector2(thickness * 0.25, 0)]), bark)
 	draw_line(origin + Vector2(-thickness * 0.42, 0), top, bark.lightened(0.25), maxf(2.0, thickness * 0.18), true)
+	if species == "birch":
+		for i in range(6):
+			var mark := origin.lerp(top, float(i + 1) / 8.0)
+			draw_line(mark - Vector2(thickness * 0.45, 0), mark + Vector2(thickness * 0.42, 0), Color("#625d52"), maxf(1.0, h * 0.004), true)
 	var reach: float = w * (0.13 + minf(_display.z, 24.0) * 0.005)
+	if species == "willow":
+		reach *= 1.2
+	elif species == "birch":
+		reach *= 0.72
 	for i in range(5):
 		var side: float = -1.0 if i % 2 == 0 else 1.0
 		var start := origin.lerp(top, 0.42 + float(i) * 0.10)
@@ -116,11 +148,42 @@ func _draw() -> void:
 		var angle: float = i * 2.399963
 		var dist: float = sqrt(float(i) / float(clusters))
 		var pos := top + Vector2(cos(angle) * reach * dist, sin(angle) * h * 0.12 * dist)
+		if species == "birch":
+			pos.y -= dist * h * 0.035
+		elif species == "willow":
+			pos.y += absf(cos(angle)) * h * 0.045
 		var shade: Color = foliage.darkened(0.23 + 0.09 * sin(i * 1.7))
 		draw_circle(pos, radius * (0.65 + 0.22 * cos(i * 1.3)), shade)
 		draw_circle(pos - Vector2(radius * 0.12, radius * 0.16), radius * 0.52, foliage.lightened(0.11 + 0.07 * sin(i)))
-	
+	if species == "willow":
+		for i in range(12):
+			var fraction: float = float(i) / 11.0
+			var start := top + Vector2(lerpf(-reach, reach, fraction), h * 0.015)
+			var end := start + Vector2(sin(i * 2.0) * w * 0.02, h * (0.10 + 0.045 * cos(i * 1.4)))
+			draw_polyline(PackedVector2Array([start, start.lerp(end, 0.5) + Vector2(w * 0.015, 0), end]), foliage.darkened(0.12), maxf(1.5, h * 0.006), true)
+
+	# A short, deterministic seasonal weather burst; no permanent particle loop.
+	if _weather > 0.0:
+		_draw_weather(w, h, phase)
+
 	# Health bar remains legible on every palette.
 	var bar := Rect2(w * 0.18, h * 0.947, w * 0.64, maxf(5.0, h * 0.022))
 	draw_rect(bar, Color("#131b1a"))
 	draw_rect(Rect2(bar.position, Vector2(bar.size.x * health, bar.size.y)), Color("#d27366").lerp(Color("#9cc47b"), health))
+
+func _draw_weather(w: float, h: float, phase: int) -> void:
+	var alpha: float = sin(PI * _weather) * 0.72
+	for i in range(24):
+		var x: float = fposmod(float(i) * 0.618 + _weather_elapsed * (0.12 if phase == 2 else 0.035), 1.0) * w
+		var y: float = fposmod(float(i) * 0.371 + _weather_elapsed * (0.8 if phase == 0 else 0.22), 1.0) * h * 0.73
+		var pos := Vector2(x, y)
+		match phase:
+			0:
+				draw_line(pos, pos + Vector2(-w * 0.015, h * 0.055), Color(0.7, 0.86, 0.87, alpha), 1.8, true)
+			1:
+				draw_circle(pos, 2.0 + float(i % 3), Color(1.0, 0.87, 0.48, alpha))
+			2:
+				var drift := Vector2(cos(i + _weather_elapsed * 5.0), sin(i + _weather_elapsed * 5.0)) * 5.0
+				draw_line(pos - drift, pos + drift, Color(0.94, 0.65, 0.28, alpha), 4.0, true)
+			3:
+				draw_circle(pos, 2.0 + float(i % 2), Color(0.92, 0.96, 1.0, alpha))
